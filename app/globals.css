@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg:       #F5F0E8;
+  --bg2:      #EDE4D0;
+  --bg-card:  #FDFAF5;
+  --primary:  #5C2E0E;
+  --dark:     #2A1506;
+  --text:     #2A1506;
+  --text2:    #7A5230;
+  --text3:    #A07850;
+  --border:   #C8B090;
+  --cream:    #F5F0E8;
+  --gold:     #C4882A;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif KR', serif;
+}
+
+.font-black-han { font-family: 'Black Han Sans', sans-serif; }
+.font-mono-share { font-family: 'Share Tech Mono', monospace; }
+.font-serif-kr   { font-family: 'Noto Serif KR', serif; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* /about 풀스크린 슬라이드 덱 */
+.ha-deck {
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ha-deck::-webkit-scrollbar { display: none; }
+.ha-slide {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+@media (max-width: 640px) {
+  .ha-slide { padding: 60px 20px; }
+  .ha-projects { grid-template-columns: repeat(2, 1fr) !important; }
+}
