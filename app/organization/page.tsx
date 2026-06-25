@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import NavBar from '../../components/NavBar'
 import { supabase } from '../../lib/supabase'
 
@@ -37,13 +36,130 @@ const ADVISOR_FIELD_GROUPS = [
 
 const PARTNER_TYPES = ['학술기관', '기업', 'NGO', '정부기관', '미디어']
 const CONTACT_EMAIL = 'zphistory5974@gmail.com'
-
-// All known fields for categorizing
 const ALL_KNOWN_FIELDS = ADVISOR_FIELD_GROUPS.flatMap(g => g.fields)
+
+function AdvisorModal({ advisor, onClose }: { advisor: Advisor; onClose: () => void }) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div
+      className="advisor-modal-backdrop"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(42, 21, 6, 0.6)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '24px',
+      }}
+    >
+      <div
+        className="advisor-modal-card"
+        style={{
+          width: '100%', maxWidth: 480,
+          background: 'var(--bg-card)',
+          border: '1.5px solid var(--border)',
+          boxShadow: '0 24px 64px rgba(42, 21, 6, 0.35)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header */}
+        <div style={{ background: 'var(--primary)', padding: '32px 32px 28px', position: 'relative' }}>
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute', top: 16, right: 16,
+              width: 32, height: 32,
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: 'var(--cream)', cursor: 'pointer',
+              fontFamily: "'Share Tech Mono',monospace", fontSize: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            aria-label="닫기"
+          >✕</button>
+
+          {/* Field badge */}
+          {advisor.field && (
+            <div style={{
+              display: 'inline-block',
+              padding: '3px 10px',
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              fontFamily: "'Share Tech Mono',monospace",
+              fontSize: 9, letterSpacing: 3,
+              color: 'var(--cream)', opacity: 0.85,
+              marginBottom: 12,
+            }}>
+              {advisor.field.toUpperCase()}
+            </div>
+          )}
+
+          <div className="font-black-han" style={{ fontSize: 28, color: 'var(--cream)', letterSpacing: -1, marginBottom: advisor.title ? 6 : 0 }}>
+            {advisor.name}
+          </div>
+          {advisor.title && (
+            <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 14, color: 'var(--cream)', opacity: 0.7 }}>
+              {advisor.title}
+            </div>
+          )}
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '28px 32px 32px' }}>
+          {advisor.organization && (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 20 }}>
+              <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text2)', opacity: 0.6, whiteSpace: 'nowrap' }}>ORGANIZATION</div>
+              <div style={{ width: 1, height: 12, background: 'var(--border)' }} />
+              <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 14, color: 'var(--text)' }}>{advisor.organization}</div>
+            </div>
+          )}
+
+          {advisor.bio ? (
+            <>
+              <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text2)', opacity: 0.6, marginBottom: 10 }}>ABOUT</div>
+              <p style={{
+                fontFamily: "'Noto Serif KR',serif",
+                fontSize: 14, lineHeight: 1.9,
+                color: 'var(--text)', margin: 0,
+              }}>
+                {advisor.bio}
+              </p>
+            </>
+          ) : (
+            <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 13, color: 'var(--text2)', opacity: 0.5, fontStyle: 'italic' }}>
+              소개글이 없습니다.
+            </div>
+          )}
+
+          <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={onClose}
+              style={{
+                padding: '9px 22px',
+                background: 'transparent',
+                border: '1.5px solid var(--border)',
+                color: 'var(--text2)', cursor: 'pointer',
+                fontFamily: "'Share Tech Mono',monospace",
+                fontSize: 11, letterSpacing: 2,
+              }}
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function OrganizationPage() {
   const [advisors, setAdvisors] = useState<Advisor[]>([])
   const [partners, setPartners] = useState<Partner[]>([])
+  const [selectedAdvisor, setSelectedAdvisor] = useState<Advisor | null>(null)
 
   useEffect(() => {
     supabase.from('advisors').select('id,name,field,title,organization,bio').order('created_at', { ascending: true }).then(({ data }) => { if (data) setAdvisors(data) })
@@ -58,12 +174,15 @@ export default function OrganizationPage() {
     return partners.filter(p => p.type === type)
   }
 
-  // Advisors whose field doesn't match any known group (e.g., old field names)
   const uncategorizedAdvisors = advisors.filter(a => !ALL_KNOWN_FIELDS.includes(a.field ?? ''))
 
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       <NavBar title="조직도" />
+
+      {selectedAdvisor && (
+        <AdvisorModal advisor={selectedAdvisor} onClose={() => setSelectedAdvisor(null)} />
+      )}
 
       {/* HERO */}
       <div style={{ background: 'var(--dark)', padding: '64px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
@@ -84,7 +203,6 @@ export default function OrganizationPage() {
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, opacity: 0.4 }}>HUMAN ALLIANCE</div>
           </div>
           <div style={{ width: 1, height: 40, background: 'var(--border)' }} />
-          {/* Horizontal branch */}
           <div style={{ width: '70%', height: 1, background: 'var(--border)', position: 'relative' }}>
             <div style={{ position: 'absolute', left: 0, top: 0, width: 1, height: 32, background: 'var(--border)' }} />
             <div style={{ position: 'absolute', right: 0, top: 0, width: 1, height: 32, background: 'var(--border)' }} />
@@ -110,7 +228,7 @@ export default function OrganizationPage() {
         {/* ADVISORS + PARTNERS GRID */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
 
-          {/* ADVISORS — grouped by category */}
+          {/* ADVISORS */}
           <div>
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 16 }}>분야별 고문위원</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -118,21 +236,23 @@ export default function OrganizationPage() {
                 const filled = getAdvisorsByCategory(group.fields)
                 return (
                   <div key={group.category} style={{ marginBottom: 10 }}>
-                    {/* Category label */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--text2)', opacity: 0.55 }}>{group.category.toUpperCase()}</div>
                       <div style={{ flex: 1, height: 1, background: 'var(--border)', opacity: 0.4 }} />
                     </div>
-                    {/* Filled advisors */}
                     {filled.map(a => (
-                      <div key={a.id} style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}>
+                      <div
+                        key={a.id}
+                        className="advisor-card"
+                        onClick={() => setSelectedAdvisor(a)}
+                        style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}
+                      >
                         <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--primary)', marginBottom: 4 }}>{(a.field ?? '').toUpperCase()}</div>
                         <div className="font-black-han" style={{ fontSize: 15, marginBottom: 2 }}>{a.name}</div>
                         {a.title && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.title}</div>}
                         {a.organization && <div style={{ fontSize: 11, color: 'var(--text2)', opacity: 0.7 }}>{a.organization}</div>}
                       </div>
                     ))}
-                    {/* One empty slot per category */}
                     <div style={{ padding: '12px 16px', background: 'var(--bg)', border: '1.5px dashed var(--border)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 10 }}>
                       <div style={{ width: 20, height: 20, border: '1.5px dashed var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <span style={{ fontSize: 12, color: 'var(--border)', lineHeight: 1 }}>+</span>
@@ -142,7 +262,6 @@ export default function OrganizationPage() {
                   </div>
                 )
               })}
-              {/* Uncategorized advisors (old field names) */}
               {uncategorizedAdvisors.length > 0 && (
                 <div style={{ marginBottom: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -150,7 +269,12 @@ export default function OrganizationPage() {
                     <div style={{ flex: 1, height: 1, background: 'var(--border)', opacity: 0.4 }} />
                   </div>
                   {uncategorizedAdvisors.map(a => (
-                    <div key={a.id} style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}>
+                    <div
+                      key={a.id}
+                      className="advisor-card"
+                      onClick={() => setSelectedAdvisor(a)}
+                      style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}
+                    >
                       <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--primary)', marginBottom: 4 }}>{(a.field ?? '').toUpperCase()}</div>
                       <div className="font-black-han" style={{ fontSize: 15, marginBottom: 2 }}>{a.name}</div>
                       {a.title && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.title}</div>}

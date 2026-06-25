@@ -65,3 +65,28 @@ body {
   .ha-slide { padding: 60px 20px; }
   .ha-projects { grid-template-columns: repeat(2, 1fr) !important; }
 }
+
+.advisor-card {
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.advisor-card:hover {
+  border-color: var(--gold) !important;
+  box-shadow: 0 4px 18px rgba(92, 46, 14, 0.18);
+  transform: translateY(-1px);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.advisor-modal-backdrop {
+  animation: modalFadeIn 0.18s ease;
+}
+.advisor-modal-card {
+  animation: modalSlideUp 0.22s ease;
+}
