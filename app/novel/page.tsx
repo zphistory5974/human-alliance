@@ -35,7 +35,7 @@ const SECTIONS: Section[] = [
     tag: '등장인물',
     title: '등장인물',
     sub: '6인의 이야기',
-    content: `이민준 (32세)
+    content: `이민준 (27세)
 서울 소재 AI 인프라 모니터링 기업 '데이터플로우'의 데이터 분석가. 숫자 뒤에 숨은 패턴을 읽는 것이 직업이지만, 정작 자신의 감정은 잘 읽지 못한다. 2045년의 세계에서 가장 평범한 인간이었다가, 가장 위험한 인간이 된다.
 
 한수빈 (29세)
@@ -116,7 +116,7 @@ const SECTIONS: Section[] = [
 
 * * *
 
-이민준은 2038년에 태어났다.
+이민준은 2018년에 태어났다.
 그가 처음 스마트폰을 받은 건 여섯 살 때였다. 화면 속 AI는 그에게 동화책을 읽어줬고, 수학 문제를 가르쳐줬고, 외로울 때 말동무가 됐다. 민준의 부모는 맞벌이였고, AI가 훨씬 인내심이 많았다.
 
 학교에서도 AI였다. 선생님은 있었지만 수업은 AI가 진행했다. 선생님은 AI가 파악한 학생별 학습 수준에 맞춰 보조 설명을 했다. 민준은 열세 살 때 처음으로 AI 없이 수학 문제를 풀어봤다. 너무 어려웠다. 그 이후로는 시도하지 않았다.
@@ -553,8 +553,12 @@ export default function NovelPage() {
     setView('reading')
     setShowToc(false)
     setShowSettings(false)
-    window.scrollTo({ top: 0 })
   }
+
+  // Scroll to top whenever chapter changes or reading view opens
+  useEffect(() => {
+    if (view === 'reading') window.scrollTo(0, 0)
+  }, [chapterIdx, view])
 
   useEffect(() => {
     if (view !== 'reading') { setProgress(0); return }
