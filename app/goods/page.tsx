@@ -200,7 +200,6 @@ export default function GoodsPage() {
   const [user, setUser] = useState<User | null>(null)
   const [appliedGoods, setAppliedGoods] = useState<Set<string>>(new Set())
   const [applyingId, setApplyingId] = useState<string | null>(null)
-  const [loginHint, setLoginHint] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null))
@@ -222,10 +221,9 @@ export default function GoodsPage() {
   }, [user?.id])
 
   async function handleApply(item: GoodsItem) {
-    if (!user) { setLoginHint(true); return }
+    if (!user) return
     if (appliedGoods.has(item.id)) return
     setApplyingId(item.id)
-    setLoginHint(false)
     const { error } = await supabase.from('goods_orders').insert({ kakao_id: user.id, goods_name: item.id })
     if (!error || error.code === '23505') {
       setAppliedGoods(prev => new Set([...prev, item.id]))
@@ -270,18 +268,6 @@ export default function GoodsPage() {
         </span>
       </div>
 
-      {/* 로그인 안내 */}
-      {loginHint && (
-        <div style={{ background: 'var(--dark)', borderBottom: '2px solid var(--gold)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span className="font-mono-share" style={{ fontSize: 11, letterSpacing: 2, color: 'rgba(245,240,232,0.8)' }}>
-            카카오 로그인 후 관심 신청 가능합니다
-          </span>
-          <button onClick={handleLogin} className="font-black-han" style={{ background: '#FEE500', color: '#191919', border: 'none', padding: '8px 22px', fontSize: 12, letterSpacing: 2, cursor: 'pointer' }}>
-            카카오 로그인
-          </button>
-        </div>
-      )}
-
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '60px 24px' }}>
 
         {/* 카테고리별 굿즈 */}
@@ -317,6 +303,14 @@ export default function GoodsPage() {
                         {isApplied ? (
                           <button disabled className="font-black-han" style={{ width: '100%', padding: '11px 0', background: 'var(--dark)', color: 'var(--gold)', border: 'none', fontSize: 13, letterSpacing: 3, cursor: 'default' }}>
                             신청 완료 ✓
+                          </button>
+                        ) : !user ? (
+                          <button
+                            onClick={handleLogin}
+                            className="font-black-han"
+                            style={{ width: '100%', padding: '11px 0', background: '#FEE500', color: '#3C1E1E', border: 'none', fontSize: 12, letterSpacing: 1, cursor: 'pointer' }}
+                          >
+                            카카오 로그인 후 신청하기
                           </button>
                         ) : (
                           <button

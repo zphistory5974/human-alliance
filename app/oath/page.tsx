@@ -37,6 +37,7 @@ const ARTICLES = [
 
 export default function OathPage() {
   const [stage, setStage] = useState<Stage>('form')
+  const [sessionLoading, setSessionLoading] = useState(true)
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [form, setForm] = useState({ name: '', occupation: '', gender: '', nationality: '대한민국', email: '' })
   const [checked, setChecked] = useState([false, false, false, false, false])
@@ -50,7 +51,10 @@ export default function OathPage() {
   // 세션 감지
   useEffect(() => {
     const sb = createClient()
-    sb.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null))
+    sb.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setSessionLoading(false)
+    })
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -447,8 +451,34 @@ export default function OathPage() {
           </div>
         )}
 
+        {/* ── LOGIN WALL ── */}
+        {stage === 'form' && !sessionLoading && !user && (
+          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: '80px 48px', textAlign: 'center' }}>
+            <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', opacity: 0.6, marginBottom: 20 }}>
+              HUMAN FIRST OATH
+            </div>
+            <h2 className="font-black-han" style={{ fontSize: 'clamp(20px,4vw,32px)', letterSpacing: -1, marginBottom: 16 }}>
+              서약하려면 로그인이 필요합니다
+            </h2>
+            <p style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 14, color: 'var(--text2)', lineHeight: 2, marginBottom: 40, maxWidth: 400, margin: '0 auto 40px' }}>
+              카카오 계정으로 로그인하면<br />서약을 진행하고 인증서를 받을 수 있습니다.
+            </p>
+            <button
+              onClick={handleLogin}
+              className="font-black-han"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: '#FEE500', color: '#3C1E1E', border: 'none',
+                padding: '18px 56px', fontSize: 18, letterSpacing: 2, cursor: 'pointer',
+              }}
+            >
+              카카오 로그인
+            </button>
+          </div>
+        )}
+
         {/* ── FORM ── */}
-        {stage === 'form' && (
+        {stage === 'form' && !sessionLoading && user && (
           <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: '48px' }}>
             <h1 className="font-black-han" style={{ fontSize: 'clamp(20px,4vw,32px)', letterSpacing: -1, marginBottom: 8 }}>
               Human First 서약

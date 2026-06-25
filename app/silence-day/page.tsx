@@ -33,7 +33,6 @@ export default function SilenceDayPage() {
   const [user, setUser] = useState<User | null>(null)
   const [applied, setApplied] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [loginHint, setLoginHint] = useState(false)
   const [applyError, setApplyError] = useState('')
 
   useEffect(() => {
@@ -60,9 +59,8 @@ export default function SilenceDayPage() {
   }, [user?.id])
 
   async function handleApply() {
-    if (!user) { setLoginHint(true); return }
+    if (!user) return
     setLoading(true)
-    setLoginHint(false)
     setApplyError('')
     const { error } = await supabase.from('silence_day_participants').insert({ kakao_id: user.id })
     if (!error || error.code === '23505') {
@@ -150,18 +148,14 @@ export default function SilenceDayPage() {
               <button disabled className="font-black-han" style={{ background: 'var(--dark)', color: 'var(--gold)', border: 'none', padding: '16px 52px', fontSize: 16, letterSpacing: 4, cursor: 'default' }}>
                 신청 완료 ✓
               </button>
+            ) : !user ? (
+              <button onClick={handleLogin} className="font-black-han" style={{ background: '#FEE500', color: '#3C1E1E', border: 'none', padding: '16px 52px', fontSize: 16, letterSpacing: 2, cursor: 'pointer' }}>
+                카카오 로그인 후 신청하기
+              </button>
             ) : (
               <button onClick={handleApply} disabled={loading} className="font-black-han" style={{ background: 'var(--dark)', color: 'var(--cream)', border: 'none', padding: '16px 52px', fontSize: 16, letterSpacing: 4, cursor: loading ? 'wait' : 'pointer' }}>
                 {loading ? '처리중...' : '신청하기'}
               </button>
-            )}
-            {loginHint && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                <p className="font-mono-share" style={{ fontSize: 12, color: 'rgba(245,240,232,0.8)', letterSpacing: 2 }}>카카오 로그인 후 신청 가능합니다</p>
-                <button onClick={handleLogin} className="font-black-han" style={{ background: '#FEE500', color: '#191919', border: 'none', padding: '10px 28px', fontSize: 13, letterSpacing: 2, cursor: 'pointer' }}>
-                  카카오 로그인
-                </button>
-              </div>
             )}
             {applyError && (
               <p className="font-mono-share" style={{ fontSize: 11, color: '#ffb3b3', letterSpacing: 1, marginTop: 4 }}>{applyError}</p>
