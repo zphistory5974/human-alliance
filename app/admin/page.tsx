@@ -17,12 +17,27 @@ type LectureApplicant = { id: number; kakao_id: string | null; created_at: strin
 type SilenceApplicant = { id: number; kakao_id: string | null; created_at: string }
 type GoodsOrder = { kakao_id: string | null; goods_name: string | null; created_at: string }
 
-const ADVISOR_FIELDS = ['철학', '심리학', 'AI 윤리', '법학', '사회학', '문화/예술', '국제관계']
+const ADVISOR_FIELD_GROUPS = [
+  { category: '인문학', fields: ['철학', '역사학', '문학', '언어학', '종교학'] },
+  { category: '사회과학', fields: ['심리학', '사회학', '정치학', '경제학', '행정학', '국제관계학'] },
+  { category: '공학', fields: ['AI/컴퓨터공학', '전자전기공학', '기계공학', '화학공학', '건설환경공학', '산업공학', '로봇공학'] },
+  { category: '자연과학', fields: ['물리학', '화학', '생물학', '수학', '천문학'] },
+  { category: '의학/생명과학', fields: ['의학', '간호학', '약학', '생명과학', '공공보건학'] },
+  { category: '법학', fields: ['법학', '법조계'] },
+  { category: '경영/경제', fields: ['경영학', '경제학', '회계학'] },
+  { category: '예술/디자인', fields: ['미술', '디자인', '음악', '영화/미디어'] },
+  { category: '교육', fields: ['교육학'] },
+  { category: '환경/지구과학', fields: ['환경공학', '지구과학', '기후학'] },
+  { category: '기타', fields: ['윤리학', '미래학', '데이터사이언스'] },
+]
+
 const PARTNER_TYPES = ['학술기관', '기업', 'NGO', '정부기관', '미디어']
 
 function Section({ title }: { title: string }) {
   return <h2 style={{ ...han, fontSize: 22, letterSpacing: -1, marginBottom: 20 }}>{title}</h2>
 }
+
+const emptyAdvisorForm = { name: '', field: '철학', title: '', organization: '', bio: '' }
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
@@ -42,10 +57,16 @@ export default function AdminPage() {
   const [silenceApplicants, setSilenceApplicants] = useState<SilenceApplicant[]>([])
   const [goodsOrders, setGoodsOrders] = useState<GoodsOrder[]>([])
 
-  // Advisor form
-  const [aForm, setAForm] = useState({ name: '', field: '철학', title: '', organization: '', bio: '' })
+  // Advisor add form
+  const [aForm, setAForm] = useState(emptyAdvisorForm)
   const [aSaving, setASaving] = useState(false)
   const [aError, setAError] = useState('')
+
+  // Advisor edit
+  const [editingAdvisor, setEditingAdvisor] = useState<Advisor | null>(null)
+  const [aEditForm, setAEditForm] = useState(emptyAdvisorForm)
+  const [aEditSaving, setAEditSaving] = useState(false)
+  const [aEditError, setAEditError] = useState('')
 
   // Partner form
   const [pForm, setPForm] = useState({ name: '', type: '학술기관', description: '' })
@@ -105,8 +126,29 @@ export default function AdminPage() {
       .select('id,name,field,title,organization,bio')
       .single()
     if (error) { setAError(error.message) }
-    else if (data) { setAdvisors(prev => [...prev, data]); setAForm({ name: '', field: '철학', title: '', organization: '', bio: '' }) }
+    else if (data) { setAdvisors(prev => [...prev, data]); setAForm(emptyAdvisorForm) }
     setASaving(false)
+  }
+
+  function startEditAdvisor(a: Advisor) {
+    setEditingAdvisor(a)
+    setAEditForm({ name: a.name, field: a.field ?? '철학', title: a.title ?? '', organization: a.organization ?? '', bio: a.bio ?? '' })
+    setAEditError('')
+  }
+
+  async function saveEditAdvisor() {
+    if (!editingAdvisor || !aEditForm.name.trim()) return
+    setAEditSaving(true)
+    setAEditError('')
+    const { data, error } = await supabase
+      .from('advisors')
+      .update({ name: aEditForm.name.trim(), field: aEditForm.field, title: aEditForm.title.trim() || null, organization: aEditForm.organization.trim() || null, bio: aEditForm.bio.trim() || null })
+      .eq('id', editingAdvisor.id)
+      .select('id,name,field,title,organization,bio')
+      .single()
+    if (error) { setAEditError(error.message) }
+    else if (data) { setAdvisors(prev => prev.map(a => a.id === editingAdvisor.id ? data : a)); setEditingAdvisor(null) }
+    setAEditSaving(false)
   }
 
   async function deleteAdvisor(id: string) {
@@ -165,6 +207,37 @@ export default function AdminPage() {
         <span style={{ ...han, fontSize: 16, letterSpacing: 2, color: 'var(--cream)' }}>인간연합 관리자</span>
         <span style={{ ...mono, fontSize: 10, letterSpacing: 3, color: 'rgba(255,255,255,0.3)' }}>ADMIN DASHBOARD</span>
       </nav>
+
+      {/* EDIT MODAL */}
+      {editingAdvisor && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          onClick={e => { if (e.target === e.currentTarget) setEditingAdvisor(null) }}>
+          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: 32, width: '100%', maxWidth: 560 }}>
+            <div style={{ ...mono, fontSize: 9, letterSpacing: 3, color: 'var(--text2)', marginBottom: 4 }}>EDIT ADVISOR</div>
+            <div style={{ ...han, fontSize: 18, marginBottom: 20 }}>{editingAdvisor.name} 수정</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+              <input value={aEditForm.name} onChange={e => setAEditForm(f => ({ ...f, name: e.target.value }))} placeholder="이름 *" style={inputStyle} />
+              <select value={aEditForm.field} onChange={e => setAEditForm(f => ({ ...f, field: e.target.value }))} style={selectStyle}>
+                {ADVISOR_FIELD_GROUPS.map(g => (
+                  <optgroup key={g.category} label={g.category}>
+                    {g.fields.map(f => <option key={f} value={f}>{f}</option>)}
+                  </optgroup>
+                ))}
+              </select>
+              <input value={aEditForm.title} onChange={e => setAEditForm(f => ({ ...f, title: e.target.value }))} placeholder="직함 (예: 교수)" style={inputStyle} />
+              <input value={aEditForm.organization} onChange={e => setAEditForm(f => ({ ...f, organization: e.target.value }))} placeholder="소속 기관" style={inputStyle} />
+            </div>
+            <textarea value={aEditForm.bio} onChange={e => setAEditForm(f => ({ ...f, bio: e.target.value }))} placeholder="소개글 (선택)" rows={3} style={{ ...inputStyle, width: '100%', resize: 'vertical', marginBottom: 10, display: 'block' }} />
+            {aEditError && <p style={{ color: '#c0392b', fontSize: 12, marginBottom: 10, ...mono }}>{aEditError}</p>}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={saveEditAdvisor} disabled={aEditSaving || !aEditForm.name.trim()} style={{ padding: '10px 24px', background: 'var(--primary)', color: 'var(--cream)', border: 'none', ...han, fontSize: 14, letterSpacing: 2, cursor: aEditSaving ? 'wait' : 'pointer', opacity: !aEditForm.name.trim() ? 0.5 : 1 }}>
+                {aEditSaving ? '저장 중...' : '저장하기'}
+              </button>
+              <button onClick={() => setEditingAdvisor(null)} style={{ padding: '10px 20px', background: 'transparent', color: 'var(--text2)', border: '1.5px solid var(--border)', cursor: 'pointer', ...mono, fontSize: 12 }}>취소</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 24px' }}>
 
@@ -286,7 +359,11 @@ export default function AdminPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 10, marginBottom: 10 }}>
               <input value={aForm.name} onChange={e => setAForm(f => ({ ...f, name: e.target.value }))} placeholder="이름 *" style={inputStyle} />
               <select value={aForm.field} onChange={e => setAForm(f => ({ ...f, field: e.target.value }))} style={selectStyle}>
-                {ADVISOR_FIELDS.map(f => <option key={f}>{f}</option>)}
+                {ADVISOR_FIELD_GROUPS.map(g => (
+                  <optgroup key={g.category} label={g.category}>
+                    {g.fields.map(f => <option key={f} value={f}>{f}</option>)}
+                  </optgroup>
+                ))}
               </select>
               <input value={aForm.title} onChange={e => setAForm(f => ({ ...f, title: e.target.value }))} placeholder="직함 (예: 교수)" style={inputStyle} />
               <input value={aForm.organization} onChange={e => setAForm(f => ({ ...f, organization: e.target.value }))} placeholder="소속 기관" style={inputStyle} />
@@ -311,7 +388,12 @@ export default function AdminPage() {
                     <td style={{ ...TD, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{a.title ?? '—'}</td>
                     <td style={{ ...TD, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{a.organization ?? '—'}</td>
                     <td style={{ ...TD, color: 'var(--text2)', fontSize: 12, maxWidth: 240 }}>{a.bio ? <span title={a.bio}>{a.bio.length > 40 ? a.bio.slice(0, 40) + '…' : a.bio}</span> : '—'}</td>
-                    <td style={TD}><button onClick={() => deleteAdvisor(a.id)} style={{ padding: '4px 12px', background: '#c0392b', color: '#fff', border: 'none', cursor: 'pointer', ...mono, fontSize: 10 }}>삭제</button></td>
+                    <td style={TD}>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => startEditAdvisor(a)} style={{ padding: '4px 12px', background: 'var(--primary)', color: 'var(--cream)', border: 'none', cursor: 'pointer', ...mono, fontSize: 10, whiteSpace: 'nowrap' }}>수정</button>
+                        <button onClick={() => deleteAdvisor(a.id)} style={{ padding: '4px 12px', background: '#c0392b', color: '#fff', border: 'none', cursor: 'pointer', ...mono, fontSize: 10, whiteSpace: 'nowrap' }}>삭제</button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {advisors.length === 0 && <tr><td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--text2)' }}>등록된 고문위원이 없습니다.</td></tr>}

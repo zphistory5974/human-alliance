@@ -21,9 +21,25 @@ type Partner = {
   description: string | null
 }
 
-const ADVISOR_FIELDS = ['철학', '심리학', 'AI 윤리', '법학', '사회학', '문화/예술', '국제관계']
+const ADVISOR_FIELD_GROUPS = [
+  { category: '인문학', fields: ['철학', '역사학', '문학', '언어학', '종교학'] },
+  { category: '사회과학', fields: ['심리학', '사회학', '정치학', '경제학', '행정학', '국제관계학'] },
+  { category: '공학', fields: ['AI/컴퓨터공학', '전자전기공학', '기계공학', '화학공학', '건설환경공학', '산업공학', '로봇공학'] },
+  { category: '자연과학', fields: ['물리학', '화학', '생물학', '수학', '천문학'] },
+  { category: '의학/생명과학', fields: ['의학', '간호학', '약학', '생명과학', '공공보건학'] },
+  { category: '법학', fields: ['법학', '법조계'] },
+  { category: '경영/경제', fields: ['경영학', '경제학', '회계학'] },
+  { category: '예술/디자인', fields: ['미술', '디자인', '음악', '영화/미디어'] },
+  { category: '교육', fields: ['교육학'] },
+  { category: '환경/지구과학', fields: ['환경공학', '지구과학', '기후학'] },
+  { category: '기타', fields: ['윤리학', '미래학', '데이터사이언스'] },
+]
+
 const PARTNER_TYPES = ['학술기관', '기업', 'NGO', '정부기관', '미디어']
 const CONTACT_EMAIL = 'zphistory5974@gmail.com'
+
+// All known fields for categorizing
+const ALL_KNOWN_FIELDS = ADVISOR_FIELD_GROUPS.flatMap(g => g.fields)
 
 export default function OrganizationPage() {
   const [advisors, setAdvisors] = useState<Advisor[]>([])
@@ -34,13 +50,16 @@ export default function OrganizationPage() {
     supabase.from('partners').select('id,name,type,description').order('created_at', { ascending: true }).then(({ data }) => { if (data) setPartners(data) })
   }, [])
 
-  function getAdvisorsByField(field: string) {
-    return advisors.filter(a => a.field === field)
+  function getAdvisorsByCategory(fields: string[]) {
+    return advisors.filter(a => fields.includes(a.field ?? ''))
   }
 
   function getPartnersByType(type: string) {
     return partners.filter(p => p.type === type)
   }
+
+  // Advisors whose field doesn't match any known group (e.g., old field names)
+  const uncategorizedAdvisors = advisors.filter(a => !ALL_KNOWN_FIELDS.includes(a.field ?? ''))
 
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
@@ -91,36 +110,55 @@ export default function OrganizationPage() {
         {/* ADVISORS + PARTNERS GRID */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
 
-          {/* ADVISORS — 7 fields, multiple per field */}
+          {/* ADVISORS — grouped by category */}
           <div>
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 16 }}>분야별 고문위원</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {ADVISOR_FIELDS.map(field => {
-                const filled = getAdvisorsByField(field)
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {ADVISOR_FIELD_GROUPS.map(group => {
+                const filled = getAdvisorsByCategory(group.fields)
                 return (
-                  <div key={field}>
-                    {/* 채워진 슬롯 */}
+                  <div key={group.category} style={{ marginBottom: 10 }}>
+                    {/* Category label */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--text2)', opacity: 0.55 }}>{group.category.toUpperCase()}</div>
+                      <div style={{ flex: 1, height: 1, background: 'var(--border)', opacity: 0.4 }} />
+                    </div>
+                    {/* Filled advisors */}
                     {filled.map(a => (
-                      <div key={a.id} style={{ padding: '16px 18px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}>
-                        <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--primary)', marginBottom: 5 }}>{field.toUpperCase()}</div>
-                        <div className="font-black-han" style={{ fontSize: 16, marginBottom: 3 }}>{a.name}</div>
+                      <div key={a.id} style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}>
+                        <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--primary)', marginBottom: 4 }}>{(a.field ?? '').toUpperCase()}</div>
+                        <div className="font-black-han" style={{ fontSize: 15, marginBottom: 2 }}>{a.name}</div>
                         {a.title && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.title}</div>}
                         {a.organization && <div style={{ fontSize: 11, color: 'var(--text2)', opacity: 0.7 }}>{a.organization}</div>}
                       </div>
                     ))}
-                    {/* 빈 슬롯 (항상 1개) */}
-                    <div style={{ padding: '14px 18px', background: 'var(--bg)', border: '1.5px dashed var(--border)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 24, height: 24, border: '1.5px dashed var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontSize: 14, color: 'var(--border)', lineHeight: 1 }}>+</span>
+                    {/* One empty slot per category */}
+                    <div style={{ padding: '12px 16px', background: 'var(--bg)', border: '1.5px dashed var(--border)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 20, height: 20, border: '1.5px dashed var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: 12, color: 'var(--border)', lineHeight: 1 }}>+</span>
                       </div>
-                      <div>
-                        <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--text2)', opacity: 0.4, marginBottom: 3 }}>{field.toUpperCase()}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text2)', opacity: 0.45 }}>고문위원 모집 중</div>
-                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--text2)', opacity: 0.45 }}>고문위원 모집 중</div>
                     </div>
                   </div>
                 )
               })}
+              {/* Uncategorized advisors (old field names) */}
+              {uncategorizedAdvisors.length > 0 && (
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--text2)', opacity: 0.55 }}>기타</div>
+                    <div style={{ flex: 1, height: 1, background: 'var(--border)', opacity: 0.4 }} />
+                  </div>
+                  {uncategorizedAdvisors.map(a => (
+                    <div key={a.id} style={{ padding: '14px 16px', background: 'var(--bg-card)', border: '1.5px solid var(--primary)', marginBottom: 4 }}>
+                      <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--primary)', marginBottom: 4 }}>{(a.field ?? '').toUpperCase()}</div>
+                      <div className="font-black-han" style={{ fontSize: 15, marginBottom: 2 }}>{a.name}</div>
+                      {a.title && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{a.title}</div>}
+                      {a.organization && <div style={{ fontSize: 11, color: 'var(--text2)', opacity: 0.7 }}>{a.organization}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
