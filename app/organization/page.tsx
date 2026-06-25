@@ -156,10 +156,115 @@ function AdvisorModal({ advisor, onClose }: { advisor: Advisor; onClose: () => v
   )
 }
 
+function PartnerModal({ partner, onClose }: { partner: Partner; onClose: () => void }) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div
+      className="advisor-modal-backdrop"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(42, 21, 6, 0.6)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '24px',
+      }}
+    >
+      <div
+        className="advisor-modal-card"
+        style={{
+          width: '100%', maxWidth: 480,
+          background: 'var(--bg-card)',
+          border: '1.5px solid var(--border)',
+          boxShadow: '0 24px 64px rgba(42, 21, 6, 0.35)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header */}
+        <div style={{ background: 'var(--primary)', padding: '32px 32px 28px', position: 'relative' }}>
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute', top: 16, right: 16,
+              width: 32, height: 32,
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: 'var(--cream)', cursor: 'pointer',
+              fontFamily: "'Share Tech Mono',monospace", fontSize: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            aria-label="닫기"
+          >✕</button>
+
+          {partner.type && (
+            <div style={{
+              display: 'inline-block',
+              padding: '3px 10px',
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              fontFamily: "'Share Tech Mono',monospace",
+              fontSize: 9, letterSpacing: 3,
+              color: 'var(--cream)', opacity: 0.85,
+              marginBottom: 12,
+            }}>
+              {partner.type.toUpperCase()}
+            </div>
+          )}
+
+          <div className="font-black-han" style={{ fontSize: 28, color: 'var(--cream)', letterSpacing: -1 }}>
+            {partner.name}
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '28px 32px 32px' }}>
+          {partner.description ? (
+            <>
+              <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text2)', opacity: 0.6, marginBottom: 10 }}>ABOUT</div>
+              <p style={{
+                fontFamily: "'Noto Serif KR',serif",
+                fontSize: 14, lineHeight: 1.9,
+                color: 'var(--text)', margin: 0,
+              }}>
+                {partner.description}
+              </p>
+            </>
+          ) : (
+            <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 13, color: 'var(--text2)', opacity: 0.5, fontStyle: 'italic' }}>
+              소개글이 없습니다.
+            </div>
+          )}
+
+          <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={onClose}
+              style={{
+                padding: '9px 22px',
+                background: 'transparent',
+                border: '1.5px solid var(--border)',
+                color: 'var(--text2)', cursor: 'pointer',
+                fontFamily: "'Share Tech Mono',monospace",
+                fontSize: 11, letterSpacing: 2,
+              }}
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function OrganizationPage() {
   const [advisors, setAdvisors] = useState<Advisor[]>([])
   const [partners, setPartners] = useState<Partner[]>([])
   const [selectedAdvisor, setSelectedAdvisor] = useState<Advisor | null>(null)
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
 
   useEffect(() => {
     supabase.from('advisors').select('id,name,field,title,organization,bio').order('created_at', { ascending: true }).then(({ data }) => { if (data) setAdvisors(data) })
@@ -182,6 +287,9 @@ export default function OrganizationPage() {
 
       {selectedAdvisor && (
         <AdvisorModal advisor={selectedAdvisor} onClose={() => setSelectedAdvisor(null)} />
+      )}
+      {selectedPartner && (
+        <PartnerModal partner={selectedPartner} onClose={() => setSelectedPartner(null)} />
       )}
 
       {/* HERO */}
@@ -295,10 +403,14 @@ export default function OrganizationPage() {
                 return (
                   <div key={type}>
                     {filled.map(p => (
-                      <div key={p.id} style={{ padding: '16px 18px', background: 'var(--bg-card)', border: '1.5px solid var(--border)', marginBottom: 4 }}>
+                      <div
+                        key={p.id}
+                        className="advisor-card"
+                        onClick={() => setSelectedPartner(p)}
+                        style={{ padding: '16px 18px', background: 'var(--bg-card)', border: '1.5px solid var(--border)', marginBottom: 4 }}
+                      >
                         <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text2)', marginBottom: 5 }}>{type.toUpperCase()}</div>
-                        <div className="font-black-han" style={{ fontSize: 16, marginBottom: 3 }}>{p.name}</div>
-                        {p.description && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{p.description}</div>}
+                        <div className="font-black-han" style={{ fontSize: 16 }}>{p.name}</div>
                       </div>
                     ))}
                     <div style={{ padding: '14px 18px', background: 'var(--bg)', border: '1.5px dashed var(--border)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 12 }}>
