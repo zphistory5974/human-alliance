@@ -243,7 +243,7 @@ export default function GoodsPage() {
       <NavBar title="인간연합 × 아돈노" />
 
       {/* HERO */}
-      <div style={{ background: 'var(--dark)', padding: '80px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--dark)', padding: 'clamp(48px,7vw,80px) clamp(16px,4vw,40px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(196,136,42,0.05) 59px,rgba(196,136,42,0.05) 60px)` }} />
         <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 6, color: 'var(--gold)', opacity: 0.5, marginBottom: 16, position: 'relative' }}>{"I DON'T KNOW GOODS"}</div>
         <h1 className="font-black-han" style={{ fontSize: 'clamp(52px,13vw,120px)', color: 'var(--cream)', lineHeight: 0.88, letterSpacing: -2, position: 'relative' }}>아돈노</h1>
@@ -268,7 +268,7 @@ export default function GoodsPage() {
         </span>
       </div>
 
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '60px 24px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: 'clamp(40px,5vw,60px) clamp(16px,3vw,24px)' }}>
 
         {/* 카테고리별 굿즈 */}
         {GOODS_CATEGORIES.map(cat => (

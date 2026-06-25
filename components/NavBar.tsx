@@ -67,7 +67,7 @@ export default function NavBar({ title, backHref = '/', backLabel = '← 홈페�
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         {!loading && (user ? (
           <>
-            <span className="font-mono-share" style={{ fontSize: 11, letterSpacing: 2, color: 'rgba(245,240,232,0.6)' }}>
+            <span className="font-mono-share navbar-name" style={{ fontSize: 11, letterSpacing: 2, color: 'rgba(245,240,232,0.6)' }}>
               {displayName}
             </span>
             <button

@@ -190,13 +190,23 @@ export default function OathPage() {
   async function downloadPDF() {
     if (!certRef.current || !result) return
     try {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      // Open window before async ops on mobile to avoid popup blocker
+      const mobileWin = isMobile ? window.open('', '_blank') : null
       const { default: html2canvas } = await import('html2canvas')
-      const { default: jsPDF } = await import('jspdf')
-      const canvas = await html2canvas(certRef.current, { scale: 3, useCORS: true, backgroundColor: '#ffffff' })
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-      pdf.addImage(imgData, 'PNG', 0, 0, 297, 210)
-      pdf.save(`인간다움_인증서_${result.oath_number}.pdf`)
+      const canvas = await html2canvas(certRef.current, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+      const dataUrl = canvas.toDataURL('image/png')
+      if (isMobile) {
+        if (mobileWin) {
+          mobileWin.document.write(`<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>인간다움 인증서</title></head><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh"><img src="${dataUrl}" style="width:100%;max-width:640px;display:block;border:1px solid #444"><p style="color:#ccc;font-family:sans-serif;font-size:14px;text-align:center;margin-top:16px;line-height:1.8">이미지를 <strong>길게 눌러</strong> 저장하세요<br><span style="font-size:12px;opacity:0.6">iPhone: 이미지 저장 / Android: 이미지 다운로드</span></p></body></html>`)
+          mobileWin.document.close()
+        }
+      } else {
+        const { default: jsPDF } = await import('jspdf')
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+        pdf.addImage(dataUrl, 'PNG', 0, 0, 297, 210)
+        pdf.save(`인간다움_인증서_${result.oath_number}.pdf`)
+      }
     } catch (e) {
       console.error('PDF 생성 오류:', e)
     }
@@ -355,7 +365,7 @@ export default function OathPage() {
             background: 'rgba(0,0,0,0.55)',
           }}
         >
-          <div style={{
+          <div className="oath-welcome" style={{
             background: 'var(--primary)', color: 'var(--cream)',
             padding: '48px 56px', textAlign: 'center', maxWidth: 480,
             border: '2px solid var(--gold)',
@@ -376,7 +386,7 @@ export default function OathPage() {
 
       {/* NAV */}
       <nav style={{
-        background: 'var(--primary)', padding: '0 32px',
+        background: 'var(--primary)', padding: '0 clamp(16px,3vw,32px)',
         height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <Link href="/" className="font-black-han" style={{ fontSize: 16, letterSpacing: 2, color: 'var(--cream)', textDecoration: 'none' }}>
@@ -385,7 +395,7 @@ export default function OathPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {user ? (
             <>
-              <span className="font-mono-share" style={{ fontSize: 11, letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
+              <span className="font-mono-share navbar-name" style={{ fontSize: 11, letterSpacing: 2, color: 'rgba(255,255,255,0.5)' }}>
                 {user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email ?? ''}
               </span>
               <button
@@ -411,7 +421,7 @@ export default function OathPage() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: 'clamp(32px,5vw,60px) clamp(16px,3vw,24px)' }}>
 
         {/* ── ALREADY SIGNED ── */}
         {stage === 'already_signed' && result && (
@@ -453,7 +463,7 @@ export default function OathPage() {
 
         {/* ── LOGIN WALL ── */}
         {stage === 'form' && !sessionLoading && !user && (
-          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: '80px 48px', textAlign: 'center' }}>
+          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: 'clamp(48px,7vw,80px) clamp(20px,5vw,48px)', textAlign: 'center' }}>
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', opacity: 0.6, marginBottom: 20 }}>
               HUMAN FIRST OATH
             </div>
@@ -479,7 +489,7 @@ export default function OathPage() {
 
         {/* ── FORM ── */}
         {stage === 'form' && !sessionLoading && user && (
-          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: '48px' }}>
+          <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', padding: 'clamp(24px,4vw,48px)' }}>
             <h1 className="font-black-han" style={{ fontSize: 'clamp(20px,4vw,32px)', letterSpacing: -1, marginBottom: 8 }}>
               Human First 서약
             </h1>
@@ -508,7 +518,7 @@ export default function OathPage() {
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px' }}>
+            <div className="grid-2col-to-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px' }}>
               <div style={{ marginBottom: 24, gridColumn: '1 / -1' }}>
                 <label className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, color: 'var(--text2)', display: 'block', marginBottom: 8, textTransform: 'uppercase' }}>
                   이름 *

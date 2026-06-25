@@ -185,7 +185,7 @@ export default function OrganizationPage() {
       )}
 
       {/* HERO */}
-      <div style={{ background: 'var(--dark)', padding: '64px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--dark)', padding: 'clamp(40px,6vw,64px) clamp(16px,4vw,40px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(196,136,42,0.03) 79px,rgba(196,136,42,0.03) 80px)` }} />
         <div style={{ position: 'relative' }}>
           <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 6, color: 'var(--gold)', opacity: 0.5, marginBottom: 16 }}>HUMAN ALLIANCE · ORGANIZATION</div>
@@ -210,7 +210,7 @@ export default function OrganizationPage() {
         </div>
 
         {/* BRANCH HEADERS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 40 }}>
+        <div className="grid-2col-to-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 40 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--primary)', padding: '14px 28px', textAlign: 'center', marginBottom: 28 }}>
               <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text2)', marginBottom: 4 }}>ADVISORY BOARD</div>
@@ -226,7 +226,7 @@ export default function OrganizationPage() {
         </div>
 
         {/* ADVISORS + PARTNERS GRID */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+        <div className="grid-2col-to-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
 
           {/* ADVISORS */}
           <div>

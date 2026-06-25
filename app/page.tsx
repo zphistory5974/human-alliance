@@ -76,13 +76,13 @@ export default function Home() {
     <div style={{ background: 'var(--bg)', color: 'var(--text)' }}>
 
       {/* FREE MEMBER BANNER */}
-      <div style={{ background: 'var(--gold)', padding: '9px 40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
+      <div style={{ background: 'var(--gold)', padding: '9px clamp(16px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
         <span className="font-mono-share" style={{ fontSize: 10, letterSpacing: 4, color: '#111', fontWeight: 700 }}>✦ 현재 무료 가입 기간 — 최초 500명 한정 FREE MEMBERSHIP ✦</span>
         <span className="font-mono-share" style={{ fontSize: 9, letterSpacing: 2, color: 'rgba(0,0,0,0.55)' }}>500명 이후 가입비: $9.99 · Stripe 결제 연동 예정</span>
       </div>
 
       {/* TOP BAR */}
-      <div style={{ background: 'var(--primary)', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 40px', gap: 24 }}>
+      <div className="hide-mobile" style={{ background: 'var(--primary)', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 clamp(16px,4vw,40px)', gap: 24 }}>
         {!sessionLoading && (user ? (
           <>
             <span className="font-mono-share" style={{ fontSize: 10, letterSpacing: 2, color: 'rgba(245,240,232,0.6)' }}>{user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? ''}</span>
@@ -101,7 +101,7 @@ export default function Home() {
         background: 'var(--dark)', borderBottom: '3px solid var(--primary)',
       }}>
         {/* org name bar */}
-        <div style={{ borderBottom: '1px solid rgba(245,240,232,0.08)', padding: '14px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ borderBottom: '1px solid rgba(245,240,232,0.08)', padding: '14px clamp(16px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 16 }}>
             <span className="font-black-han" style={{ fontSize: 22, color: 'var(--cream)', letterSpacing: 1 }}>인간연합</span>
             <span className="font-mono-share" style={{ fontSize: 11, letterSpacing: 4, color: 'var(--gold)', opacity: 0.5 }}>HUMAN ALLIANCE</span>
@@ -111,7 +111,7 @@ export default function Home() {
           </Link>
         </div>
         {/* menu bar */}
-        <div style={{ padding: '0 40px', display: 'flex', alignItems: 'center', gap: 0, overflowX: 'auto' }}>
+        <div style={{ padding: '0 clamp(8px,2vw,40px)', display: 'flex', alignItems: 'center', gap: 0, overflowX: 'auto' }}>
           {([['서약', '/oath'], ['아카이브', '/archive'], ['굿즈', '/goods'], ['강의', '/lecture'], ['침묵의날', '/silence-day'], ['소설', '/novel']] as [string, string][]).map(([l, h]) => (
             <Link key={h} href={h} className="font-mono-share" style={{ fontSize: 11, letterSpacing: 3, color: 'rgba(245,240,232,0.45)', textDecoration: 'none', padding: '12px 20px', display: 'block', textTransform: 'uppercase', whiteSpace: 'nowrap', borderRight: '1px solid rgba(245,240,232,0.05)' }}>
               {l}
@@ -121,7 +121,7 @@ export default function Home() {
       </nav>
 
       {/* OFFICIAL BANNER */}
-      <section style={{ background: 'var(--dark)', padding: '80px 40px 0', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: 'var(--dark)', padding: 'clamp(48px,7vw,80px) clamp(16px,4vw,40px) 0', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(196,136,42,0.04) 79px,rgba(196,136,42,0.04) 80px), repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(196,136,42,0.04) 79px,rgba(196,136,42,0.04) 80px)` }} />
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'end' }}>
@@ -153,7 +153,7 @@ export default function Home() {
           </div>
 
           {/* STATS BAR */}
-          <div style={{ marginTop: 64, borderTop: '1px solid rgba(245,240,232,0.08)', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+          <div className="home-stats-grid" style={{ marginTop: 64, borderTop: '1px solid rgba(245,240,232,0.08)', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
             {STATS.map(({ label, value, unit }) => (
               <div key={label} style={{ padding: '28px 32px', borderRight: '1px solid rgba(245,240,232,0.06)' }}>
                 <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 4, color: 'var(--cream)', opacity: 0.3, marginBottom: 8, textTransform: 'uppercase' }}>{label}</div>
@@ -165,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* MISSION STRIP */}
-      <div style={{ background: 'var(--primary)', padding: '20px 40px' }}>
+      <div style={{ background: 'var(--primary)', padding: '20px clamp(16px,4vw,40px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 24, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'rgba(245,240,232,0.5)' }}>MISSION STATEMENT</div>
           <p className="font-serif-kr" style={{ fontSize: 14, color: 'rgba(245,240,232,0.8)', letterSpacing: 1 }}>AI가 절대 이해하지 못하는 것을 지키는 것 — 그것이 인간연합의 존재 이유입니다.</p>
@@ -180,10 +180,10 @@ export default function Home() {
       </div>
 
       {/* WHY */}
-      <section style={{ padding: '100px 40px', background: 'var(--bg)' }}>
+      <section style={{ padding: 'clamp(60px,8vw,100px) clamp(16px,4vw,40px)', background: 'var(--bg)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 80, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-            <div style={{ flex: '0 0 280px' }}>
+          <div style={{ display: 'flex', gap: 'clamp(32px,6vw,80px)', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <div style={{ flex: '0 0 min(280px,100%)' }}>
               <div className="font-mono-share fade-up" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 16 }}>WHY WE EXIST</div>
               <h2 className="font-black-han fade-up" style={{ fontSize: 'clamp(28px,4vw,48px)', letterSpacing: -1, lineHeight: 1, marginBottom: 24 }}>왜<br />인간연합인가</h2>
               <div style={{ width: 40, height: 3, background: 'var(--primary)', marginBottom: 0 }} />
@@ -208,7 +208,7 @@ export default function Home() {
       </section>
 
       {/* PROGRAMMES */}
-      <section style={{ padding: '80px 40px', background: 'var(--bg2)', borderTop: '3px solid var(--primary)' }}>
+      <section style={{ padding: 'clamp(48px,7vw,80px) clamp(16px,4vw,40px)', background: 'var(--bg2)', borderTop: '3px solid var(--primary)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
             <div>
@@ -237,10 +237,10 @@ export default function Home() {
       </section>
 
       {/* COMMITMENT */}
-      <section style={{ padding: '100px 40px', background: 'var(--bg)', borderTop: '3px solid var(--primary)' }}>
+      <section style={{ padding: 'clamp(60px,8vw,100px) clamp(16px,4vw,40px)', background: 'var(--bg)', borderTop: '3px solid var(--primary)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 80, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-            <div style={{ flex: '0 0 280px' }}>
+          <div style={{ display: 'flex', gap: 'clamp(32px,6vw,80px)', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <div style={{ flex: '0 0 min(280px,100%)' }}>
               <div className="font-mono-share fade-up" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 16 }}>COMMITMENT · 연합의 약속</div>
               <h2 className="font-black-han fade-up" style={{ fontSize: 'clamp(28px,4vw,48px)', letterSpacing: -1, lineHeight: 1, marginBottom: 24 }}>인간연합은<br />무엇을<br />하는가</h2>
               <div style={{ width: 40, height: 3, background: 'var(--primary)' }} />
@@ -264,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* MANIFESTO */}
-      <section style={{ padding: '100px 40px', background: 'var(--dark)', borderTop: '3px solid var(--gold)', textAlign: 'center' }}>
+      <section style={{ padding: 'clamp(60px,8vw,100px) clamp(16px,4vw,40px)', background: 'var(--dark)', borderTop: '3px solid var(--gold)', textAlign: 'center' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div className="font-mono-share fade-up" style={{ fontSize: 10, letterSpacing: 6, color: 'var(--gold)', opacity: 0.4, marginBottom: 48 }}>DECLARATION · 선언문</div>
           {[
@@ -282,8 +282,8 @@ export default function Home() {
       </section>
 
       {/* OATH CTA */}
-      <section style={{ padding: '80px 40px', background: 'var(--primary)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center', flexWrap: 'wrap' }}>
+      <section style={{ padding: 'clamp(48px,7vw,80px) clamp(16px,4vw,40px)', background: 'var(--primary)' }}>
+        <div className="home-cta-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center' }}>
           <div className="fade-up">
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'rgba(245,240,232,0.4)', marginBottom: 16 }}>HUMAN FIRST OATH · 서약</div>
             <h2 className="font-black-han" style={{ fontSize: 'clamp(28px,5vw,56px)', color: 'var(--cream)', letterSpacing: -1, marginBottom: 16, lineHeight: 1.1 }}>지금 서약하세요</h2>
@@ -291,7 +291,7 @@ export default function Home() {
               최초 500명은 무료 멤버십으로 함께합니다.<br />인간다움 인증서와 Human First 인증마크를 받으세요.<br /><span className="font-mono-share" style={{ fontSize: 11, letterSpacing: 2, opacity: 0.55 }}>500명 이후 가입비: $9.99 · 결제 기능 추후 Stripe 연동 예정</span>
             </p>
           </div>
-          <div className="fade-up" style={{ textAlign: 'right' }}>
+          <div className="fade-up home-cta-right" style={{ textAlign: 'right' }}>
             <div className="font-mono-share" style={{ fontSize: 'clamp(32px,6vw,60px)', color: 'var(--cream)', letterSpacing: 4, lineHeight: 1, marginBottom: 4 }}>{count === null ? '—' : count}<span style={{ fontSize: '0.4em', opacity: 0.5 }}>/ 500</span></div>
             <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, color: 'rgba(245,240,232,0.35)', marginBottom: 24 }}>FREE MEMBERS</div>
             <Link href="/oath" className="font-black-han" style={{ display: 'inline-block', background: 'var(--dark)', color: 'var(--cream)', padding: '18px 48px', fontSize: 15, letterSpacing: 4, textDecoration: 'none' }}>
@@ -302,9 +302,9 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: 'var(--dark)', padding: '60px 40px', borderTop: '1px solid rgba(245,240,232,0.06)' }}>
+      <footer style={{ background: 'var(--dark)', padding: 'clamp(40px,5vw,60px) clamp(16px,4vw,40px)', borderTop: '1px solid rgba(245,240,232,0.06)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 48, alignItems: 'start', marginBottom: 48, flexWrap: 'wrap' }}>
+          <div className="home-footer-grid" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 48, alignItems: 'start', marginBottom: 48 }}>
             <div>
               <div className="font-black-han" style={{ fontSize: 22, color: 'var(--cream)', marginBottom: 4 }}>인간연합</div>
               <div className="font-mono-share" style={{ fontSize: 9, letterSpacing: 4, color: 'rgba(245,240,232,0.25)' }}>HUMAN ALLIANCE</div>

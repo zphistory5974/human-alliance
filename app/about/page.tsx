@@ -138,7 +138,7 @@ export default function AboutPage() {
                 </p>
               ))}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+            <div className="about-values-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
               {VALUES.map(({ en, ko, desc }) => (
                 <div key={en} style={{ padding: '18px 16px', border: '1.5px solid var(--primary)' }}>
                   <div className="font-mono-share" style={{ fontSize: 8, letterSpacing: 3, color: 'var(--gold)', marginBottom: 6 }}>

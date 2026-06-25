@@ -116,7 +116,7 @@ export default function SilenceDayPage() {
       </div>
 
       {/* RULES */}
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: 'clamp(48px,7vw,80px) clamp(16px,3vw,24px)' }}>
         <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'rgba(245,240,232,0.25)', marginBottom: 12 }}>RULES</div>
         <h2 className="font-black-han" style={{ fontSize: 'clamp(22px,4vw,36px)', letterSpacing: -1, marginBottom: 32, color: 'var(--cream)' }}>침묵의 날 규칙</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 60 }}>
@@ -138,7 +138,7 @@ export default function SilenceDayPage() {
         </div>
 
         {/* APPLY */}
-        <div id="apply" style={{ background: 'var(--primary)', padding: '60px 40px', textAlign: 'center', margin: '0 -24px' }}>
+        <div id="apply" style={{ background: 'var(--primary)', padding: 'clamp(40px,5vw,60px) clamp(16px,4vw,40px)', textAlign: 'center', margin: '0 -16px' }}>
           <h3 className="font-black-han" style={{ fontSize: 'clamp(22px,4vw,36px)', color: 'var(--cream)', marginBottom: 8 }}>침묵의 날 참여 신청</h3>
           <p style={{ fontSize: 15, color: 'rgba(245,240,232,0.7)', lineHeight: 1.9, marginBottom: 36 }}>
             2026년 9월 1일, 함께 침묵합시다.

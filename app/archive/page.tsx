@@ -54,7 +54,7 @@ export default function ArchivePage() {
       <NavBar title="인간 아카이브" />
 
       {/* HERO */}
-      <div style={{ background: 'var(--bg)', padding: '60px 40px 40px', borderBottom: `2px solid var(--primary)` }}>
+      <div style={{ background: 'var(--bg)', padding: 'clamp(40px,6vw,60px) clamp(16px,4vw,40px) clamp(24px,4vw,40px)', borderBottom: `2px solid var(--primary)` }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 12 }}>HUMAN ARCHIVE</div>
           <h1 className="font-black-han" style={{ fontSize: 'clamp(36px,8vw,80px)', letterSpacing: -2, marginBottom: 12 }}>인간 아카이브</h1>
@@ -68,7 +68,7 @@ export default function ArchivePage() {
         {/* SUBMIT FORM */}
         <div style={{ background: 'var(--bg-card)', border: `1.5px solid var(--border)`, padding: 36, marginBottom: 48 }}>
           <h3 className="font-black-han" style={{ fontSize: 20, marginBottom: 20 }}>당신의 인간적인 순간을 기록하세요</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+          <div className="grid-2col-to-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
             <div>
               <label className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, color: 'var(--text2)', display: 'block', marginBottom: 6 }}>제목</label>
               <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} maxLength={40} placeholder="새벽 3시에 라면을 끓였다" style={{ width: '100%', padding: '12px 16px', border: `1.5px solid var(--border)`, outline: 'none', fontFamily: "'Noto Serif KR',serif", fontSize: 15, background: '#fff', color: 'var(--text)' }} />

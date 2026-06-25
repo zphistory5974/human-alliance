@@ -31,12 +31,22 @@ export default function CertificatePage() {
 
   async function downloadPDF() {
     if (!certRef.current || !result) return
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const mobileWin = isMobile ? window.open('', '_blank') : null
     const { default: html2canvas } = await import('html2canvas')
-    const { default: jsPDF } = await import('jspdf')
-    const canvas = await html2canvas(certRef.current, { scale: 3, useCORS: true, backgroundColor: '#FDFAF5' })
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210)
-    pdf.save(`인간다움_인증서_${result.number}.pdf`)
+    const canvas = await html2canvas(certRef.current, { scale: 2, useCORS: true, backgroundColor: '#FDFAF5' })
+    const dataUrl = canvas.toDataURL('image/png')
+    if (isMobile) {
+      if (mobileWin) {
+        mobileWin.document.write(`<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>인간다움 인증서</title></head><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh"><img src="${dataUrl}" style="width:100%;max-width:640px;display:block;border:1px solid #444"><p style="color:#ccc;font-family:sans-serif;font-size:14px;text-align:center;margin-top:16px;line-height:1.8">이미지를 <strong>길게 눌러</strong> 저장하세요<br><span style="font-size:12px;opacity:0.6">iPhone: 이미지 저장 / Android: 이미지 다운로드</span></p></body></html>`)
+        mobileWin.document.close()
+      }
+    } else {
+      const { default: jsPDF } = await import('jspdf')
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 297, 210)
+      pdf.save(`인간다움_인증서_${result.number}.pdf`)
+    }
   }
 
   return (
@@ -57,7 +67,7 @@ export default function CertificatePage() {
               <label className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, color: 'var(--text2)', display: 'block', marginBottom: 8 }}>이름 *</label>
               <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="홍길동" style={{ width: '100%', padding: '14px 18px', border: `1.5px solid var(--border)`, outline: 'none', fontFamily: "'Noto Serif KR',serif", fontSize: 16, background: '#fff', color: 'var(--text)', borderRadius: 0 }} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+            <div className="grid-2col-to-1col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
               <div>
                 <label className="font-mono-share" style={{ fontSize: 10, letterSpacing: 3, color: 'var(--text2)', display: 'block', marginBottom: 8 }}>직업 / 활동 분야</label>
                 <input value={form.occupation} onChange={e => setForm(f => ({ ...f, occupation: e.target.value }))} placeholder="디자이너, 학생..." style={{ width: '100%', padding: '14px 18px', border: `1.5px solid var(--border)`, outline: 'none', fontFamily: "'Noto Serif KR',serif", fontSize: 16, background: '#fff', color: 'var(--text)', borderRadius: 0 }} />

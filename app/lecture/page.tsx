@@ -61,7 +61,7 @@ export default function LecturePage() {
       <NavBar title="인간연합 강의" />
 
       {/* HERO */}
-      <div style={{ background: 'var(--dark)', padding: '80px 40px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--dark)', padding: 'clamp(48px,7vw,80px) clamp(16px,4vw,40px)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(196,136,42,0.04) 39px,rgba(196,136,42,0.04) 40px)` }} />
         <div style={{ maxWidth: 860, margin: '0 auto', position: 'relative' }}>
           <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 6, color: 'var(--gold)', opacity: 0.5, marginBottom: 16 }}>HUMAN ALLIANCE LECTURE 01</div>
@@ -81,7 +81,7 @@ export default function LecturePage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: 'clamp(40px,5vw,60px) clamp(16px,3vw,24px)' }}>
         {/* OVERVIEW */}
         <div className="font-mono-share" style={{ fontSize: 10, letterSpacing: 5, color: 'var(--text2)', marginBottom: 12 }}>OVERVIEW</div>
         <h2 className="font-black-han" style={{ fontSize: 'clamp(22px,4vw,36px)', letterSpacing: -1, marginBottom: 32 }}>강의 개요</h2>
@@ -119,7 +119,7 @@ export default function LecturePage() {
         </div>
 
         {/* APPLY */}
-        <div style={{ background: 'var(--primary)', padding: '60px 40px', textAlign: 'center', margin: '0 -24px' }}>
+        <div style={{ background: 'var(--primary)', padding: 'clamp(40px,5vw,60px) clamp(16px,4vw,40px)', textAlign: 'center', margin: '0 -16px' }}>
           <h3 className="font-black-han" style={{ fontSize: 'clamp(22px,4vw,36px)', color: 'var(--cream)', marginBottom: 8 }}>개강 신청하기</h3>
           <p style={{ fontSize: 15, color: 'rgba(245,240,232,0.7)', lineHeight: 1.9, marginBottom: 36 }}>
             개강 시 가장 먼저 안내해 드립니다.

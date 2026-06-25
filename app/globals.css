@@ -90,3 +90,22 @@ body {
 .advisor-modal-card {
   animation: modalSlideUp 0.22s ease;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 640px) {
+  .hide-mobile            { display: none !important; }
+  .home-stats-grid        { grid-template-columns: repeat(2, 1fr) !important; }
+  .home-cta-grid          { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .home-cta-right         { text-align: left !important; }
+  .home-footer-grid       { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .grid-2col-to-1col      { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .about-values-grid      { grid-template-columns: repeat(2, 1fr) !important; }
+  .navbar-name            { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block !important; }
+  .mob-px                 { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Oath page welcome popup */
+  .oath-welcome { padding: 32px 24px !important; margin: 16px !important; }
+}
+@media (max-width: 480px) {
+  .about-values-grid { grid-template-columns: 1fr !important; }
+}
